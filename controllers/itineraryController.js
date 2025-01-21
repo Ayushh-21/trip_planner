@@ -1,4 +1,5 @@
 const axiosInstance = require('../lib/axios');
+const { validateFlightsQueryParams, validateHotelsQueryParams, validateSitesQueryParams } = require('../validations');
 
 const getFlights = async (req, res) => {
     try {
@@ -51,7 +52,7 @@ const getHotels = async (req, res) => {
             error: "Failed to fetch hotels"
         })
     }
-} 
+}
 
 const getSites = async (req, res) => {
     try {
@@ -60,8 +61,8 @@ const getSites = async (req, res) => {
         const response = await axiosInstance.get(`/sites?test_error=${test_error}&rate_limit=${rate_limit}`)
         res.json(response.data)
     } catch (error) {
-        console.error(error)  
-        if (error.response.status === 429) { 
+        console.error(error)
+        if (error.response.status === 429) {
             res.status(429).json({
                 error: "Rate limit exceed!. Please try again after sometime."
             })
@@ -79,4 +80,46 @@ const getSites = async (req, res) => {
     }
 }
 
-module.exports = { getFlights, getHotels, getSites }
+const getFlightsByOriginAndDestination = async (req, res) => {
+    const errors = validateFlightsQueryParams(req.query)
+    if (errors.length > 0) return res.status(400).json({ errors })
+
+    try {
+        const { origin, destination } = req.query;
+        const response = await axiosInstance.get(`/flights/search?origin=${origin}&destination=${destination}`)
+        res.json(response.data)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Failed to fetch flights details" })
+    }
+}
+
+const getHotelsByLocation = async (req, res) => {
+    const errors = validateHotelsQueryParams(req.query)
+    if (errors.length > 0) return res.status(400).json({ errors })
+
+    try {
+        const { location } = req.query
+        const response = await axiosInstance.get(`/hotels/search?location=${location}`)
+        res.send(response.data)
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch hotel details" })
+    }
+}
+
+const getSitesByLocation = async (req, res) => {
+    const errors = validateHotelsQueryParams(req.query)
+    if (errors.length > 0) return res.status(400).json({ errors })
+
+    try {
+        const { location } = req.query
+        const response = await axiosInstance.get(`/sites/search?location=${location}`)
+        res.send(response.data)
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch site details" })
+    }
+}
+
+
+
+module.exports = { getFlights, getHotels, getSites, getFlightsByOriginAndDestination, getHotelsByLocation, getSitesByLocation }

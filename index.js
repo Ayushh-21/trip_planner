@@ -4,7 +4,7 @@ require('dotenv').config()
 const axiosInstance = require('./lib/axios')
 const { sequelize } = require('./models')
 const { createItinerary, getItinerary } = require('./controllers/dataController')
-const { getFlights, getHotels, getSites } = require('./controllers/itineraryController')
+const { getFlights, getHotels, getSites, getFlightsByOriginAndDestination, getHotelsByLocation, getSitesByLocation } = require('./controllers/itineraryController')
 
 const app = express()
 app.use(express.json())
@@ -16,6 +16,9 @@ app.get('/itinerary/:id', getItinerary)
 app.get('/data/flights', getFlights)
 app.get('/data/hotels', getHotels)
 app.get('/data/sites', getSites)
+app.get('/flights/search', getFlightsByOriginAndDestination)
+app.get('/hotels/search', getHotelsByLocation)
+app.get('/sites/search', getSitesByLocation)
 
 sequelize
     .authenticate()

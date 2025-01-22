@@ -101,7 +101,7 @@ const getHotelsByLocation = async (req, res) => {
     try {
         const { location } = req.query
         const response = await axiosInstance.get(`/hotels/search?location=${location}`)
-        res.send(response.data)
+        res.json(response.data)
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch hotel details" })
     }
@@ -114,7 +114,7 @@ const getSitesByLocation = async (req, res) => {
     try {
         const { location } = req.query
         const response = await axiosInstance.get(`/sites/search?location=${location}`)
-        res.send(response.data)
+        res.json(response.data)
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch site details" })
     }
